@@ -1,63 +1,128 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import axios from "axios";
+import { API } from "./services/AxiosApi";
+import { LoginPage } from "./components/login/LoginPage";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import { CharacterPage } from "./components/landing/CharactersPage";
+import { Game } from "./components/game/Game";
+import { RegisterPage } from "./components/login/RegisterPage";
+
+interface Character {
+  id: number;
+  name: string;
+  class_name: string;
+  class_id: number;
+  current_health: number;
+  max_health: number;
+  skill: number;
+  will: number;
+  strength: number;
+  spell_slot: number;
+}
 
 function App() {
-  // const http = axios.create({
-  //   baseURL: "http://127.0.0.1:8000/api/classes",
-  //   headers: {
-  //     "X-Requested-With": "XMLHttpRequest",
-  //   },
-  //   withCredentials: true,
-  // });
+  const [user, setUser] = useState<{ name: string; email: string } | null>(
+    null
+  );
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
+    null
+  );
 
-  async function fetchUsers() {
+  const [fetchingUser, setFetchingUser] = useState(true);
+
+  useEffect(() => {
+    // API.get("/user")
+    //   .then((response) => setUser(response.data))
+    //   .catch((e) => console.warn(e))
+    //   .finally(() => setFetchingUser(false));
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    setFetchingUser(true);
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/users");
-      console.log(response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Erreur lors de la récupération des classes:", error);
-      throw error;
+      const response = await API.get("/user");
+      setUser(response.data);
+    } catch (e) {
+      // Not connected
+      console.warn(e);
     }
-  }
-  fetchUsers();
 
-  // useEffect(() => {
-  //   getClasses();
-  // }, []);
-
-  // async function getClasses() {
-  //   const csrf = await http.get("/sanctum/csrf-cookie");
-  //   console.log("scrf = ", csrf);
-  // }
+    setFetchingUser(false);
+  };
 
   return (
-    <>
-      <p>pppp</p>
-      {/* <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <div>
+        {fetchingUser ? (
+          <p>Chargement en cours...</p>
+        ) : (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                user ? (
+                  <Navigate to="/characters" />
+                ) : (
+                  <LoginPage setUser={setUser} />
+                )
+              }
+            />
+            <Route
+              path="/register"
+              element={<RegisterPage setUser={setUser} />}
+            />
+
+            <Route
+              path="/characters"
+              element={
+                user ? (
+                  <CharacterPage
+                    user={user}
+                    setUser={setUser}
+                    setSelectedCharacter={setSelectedCharacter}
+                  />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+            <Route
+              path="/play"
+              element={
+                user && selectedCharacter ? (
+                  <Game selectedCharacter={selectedCharacter} />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+          </Routes>
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */}
-    </>
+    </Router>
+    // <div>
+    //   {fetchingUser ? (
+    //     <p>Chargement en cours...</p>
+    //   ) : (
+    //     <div>
+    //       {user ? (
+    //         <div>
+    //           <h2>Welcome, {user.name}!</h2>
+    //           <p>Email: {user.email}</p>
+    //           <button onClick={logout}>Logout</button>
+    //         </div>
+    //       ) : (
+    //         <LoginPage setUser={setUser} />
+    //       )}
+    //     </div>
+    //   )}
+    // </div>
   );
 }
 
