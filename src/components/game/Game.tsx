@@ -58,6 +58,7 @@ export const Game: React.FC<GameProps> = ({ selectedCharacter }) => {
       const response = await API.get(
         `/characters/${selectedCharacter?.id}/available_maps`
       );
+      console.log(response.data.data);
       setMaps(response.data.data);
     } catch (error) {
       console.error("Failed to fetch maps", error);
@@ -88,7 +89,9 @@ export const Game: React.FC<GameProps> = ({ selectedCharacter }) => {
       <Button onClick={handleBack} style={{ marginBottom: "20px" }}>
         Retour
       </Button>
-      <Title level={2}>Joueur : {selectedCharacter?.character_name}</Title>
+      <Title level={2} style={{ color: "white" }}>
+        Joueur : {selectedCharacter?.character_name}
+      </Title>
       <Row gutter={[16, 16]}>
         {maps.map((map) => (
           <Col xs={24} sm={12} md={8} key={map.id}>
