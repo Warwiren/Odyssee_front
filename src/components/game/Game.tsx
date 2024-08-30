@@ -99,7 +99,7 @@ export const Game: React.FC<GameProps> = ({ selectedCharacter }) => {
               hoverable
               cover={
                 <img
-                  src={`/${map.image}`}
+                  src={`${map.image}`}
                   alt={map.name}
                   style={{ height: 150, objectFit: "cover" }}
                 />

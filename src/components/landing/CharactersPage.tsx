@@ -4,6 +4,7 @@ import { AddCharacter } from "./AddCharacter";
 import { useNavigate } from "react-router-dom";
 import { Table, Button, Space, Modal } from "antd";
 import "./CharactersPage.css";
+import { EditCharacter } from "./EditCharacter";
 
 interface Character {
   id: number;
@@ -122,7 +123,7 @@ export const CharacterPage: React.FC<CharacterPageProps> = ({
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, character: Character) => (
+      render: (_: unknown, character: Character) => (
         <Space size="middle">
           <Button
             type="primary"
@@ -130,6 +131,16 @@ export const CharacterPage: React.FC<CharacterPageProps> = ({
           >
             Jouer
           </Button>
+          <EditCharacter
+            character={character}
+            onClassUpdated={(updatedCharacter) => {
+              setCharacters((prevCharacters) =>
+                prevCharacters.map((c) =>
+                  c.id === updatedCharacter.id ? updatedCharacter : c
+                )
+              );
+            }}
+          />
           <Button
             type="default"
             danger
@@ -152,11 +163,7 @@ export const CharacterPage: React.FC<CharacterPageProps> = ({
         columns={columns}
         dataSource={characters}
         loading={loading}
-        // rowClassName="table_character"
         rowKey="id"
-        // onRow={(record) => ({
-        //   onClick: () => handleClickCharacter(record),
-        // })}
         pagination={{ pageSize: 5 }}
       />
       <Space direction="vertical" style={{ marginTop: "20px" }}>

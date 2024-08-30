@@ -2,7 +2,7 @@ import axios from "axios";
 //import { Cookies } from "react-cookie";
 
 // const apiURL = import.meta.env.VITE_APP_API_DOMAIN;
-const apiURL = "http://localhost:8000/api";
+const apiURL = import.meta.env.VITE_BASE_URL;
 
 export const API = axios.create({
   baseURL: apiURL,
